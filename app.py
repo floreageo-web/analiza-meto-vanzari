@@ -69,7 +69,6 @@ if "--update_only" in sys.argv:
     print("🤖 Robotul a pornit...")
     all_new_data = []
 
-    # ✅ FIX: Verificăm dacă fișierul există ȘI nu e gol ȘI e valid
     if os.path.exists(FILE_DB) and os.path.getsize(FILE_DB) > 0:
         try:
             df_existing = pd.read_csv(FILE_DB)
@@ -96,7 +95,6 @@ if "--update_only" in sys.argv:
 
     print(f"📅 Interval: {start_dt} → {end_dt}\n")
 
-    # Descărcăm date pentru fiecare oraș
     for oras in ORASE_MCDO:
         print(f"🛰️  Extrag date pentru {oras}...")
         try:
@@ -109,7 +107,6 @@ if "--update_only" in sys.argv:
         except Exception as e:
             print(f"   ❌ Eroare neașteptată la {oras}: {e}. Continuăm...")
 
-    # Salvăm rezultatele
     if all_new_data:
         df_new = pd.concat(all_new_data, ignore_index=True)
         df_new["Data"] = pd.to_datetime(df_new["Data"])
@@ -122,7 +119,6 @@ if "--update_only" in sys.argv:
 
         df_final = df_final.sort_values(["Oras", "Data"]).reset_index(drop=True)
 
-        # Backup înainte de salvare
         if os.path.exists(FILE_DB):
             os.replace(FILE_DB, FILE_DB + ".bak")
             print(f"📦 Backup salvat în {FILE_DB}.bak")
@@ -140,6 +136,7 @@ if "--update_only" in sys.argv:
 # ---------------------------------------------------------------------------
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide", page_title="📊 Meteo & Vânzări McDonald's")
 st.title("📊 Analiză Meteo & Vânzări")
@@ -190,8 +187,8 @@ col4.metric("🌧️ Total precipitații", f"{df_plot['Precipitatii'].sum():.1f}
 
 st.divider()
 
-# --- Grafice ---
-tab1, tab2, tab3 = st.tabs(["🌡️ Temperaturi", "🌧️ Precipitații", "💰 Vânzări"])
+# --- Taburi principale ---
+tab1, tab2, tab3, tab4 = st.tabs(["🌡️ Temperaturi", "🌧️ Precipitații", "💰 Vânzări", "🔍 Comparație Date"])
 
 with tab1:
     fig_temp = px.line(
@@ -219,6 +216,120 @@ with tab3:
         labels={"Vanzari": "Vânzări (RON)"}
     )
     st.plotly_chart(fig_vanz, use_container_width=True)
+
+# ---------------------------------------------------------------------------
+# TAB 4 — COMPARAȚIE DOUĂ DATE
+# ---------------------------------------------------------------------------
+with tab4:
+    st.subheader("🔍 Compară două date pentru același oraș")
+    st.caption("Selectează un oraș și două date diferite pentru a vedea diferențele meteo.")
+
+    col_oras, col_d1, col_d2 = st.columns(3)
+
+    with col_oras:
+        oras_comp = st.selectbox("🏙️ Oraș:", options=all_cities, key="comp_oras")
+
+    with col_d1:
+        data1 = st.date_input(
+            "📅 Data 1:",
+            value=min_date,
+            min_value=min_date,
+            max_value=max_date,
+            key="comp_d1"
+        )
+
+    with col_d2:
+        data2 = st.date_input(
+            "📅 Data 2:",
+            value=max_date,
+            min_value=min_date,
+            max_value=max_date,
+            key="comp_d2"
+        )
+
+    if data1 == data2:
+        st.warning("⚠️ Selectează două date diferite!")
+    else:
+        df_oras = df[df["Oras"] == oras_comp]
+        row1 = df_oras[df_oras["Data"].dt.date == data1]
+        row2 = df_oras[df_oras["Data"].dt.date == data2]
+
+        if row1.empty or row2.empty:
+            st.error("❌ Una dintre date nu există în baza de date.")
+        else:
+            r1 = row1.iloc[0]
+            r2 = row2.iloc[0]
+
+            st.divider()
+            st.markdown(f"### 📊 {oras_comp}: {data1.strftime('%d %b %Y')} vs {data2.strftime('%d %b %Y')}")
+
+            # --- Carduri cu delta ---
+            c1, c2, c3, c4 = st.columns(4)
+
+            c1.metric(
+                "🌡️ Temp Max",
+                f"{r2['Max']:.1f}°C",
+                delta=f"{r2['Max']-r1['Max']:+.1f}°C",
+                help=f"Data 1: {r1['Max']:.1f}°C → Data 2: {r2['Max']:.1f}°C"
+            )
+            c2.metric(
+                "❄️ Temp Min",
+                f"{r2['Min']:.1f}°C",
+                delta=f"{r2['Min']-r1['Min']:+.1f}°C",
+                help=f"Data 1: {r1['Min']:.1f}°C → Data 2: {r2['Min']:.1f}°C"
+            )
+            c3.metric(
+                "🌧️ Precipitații",
+                f"{r2['Precipitatii']:.1f} mm",
+                delta=f"{r2['Precipitatii']-r1['Precipitatii']:+.1f} mm",
+                help=f"Data 1: {r1['Precipitatii']:.1f}mm → Data 2: {r2['Precipitatii']:.1f}mm"
+            )
+            c4.metric(
+                "💰 Vânzări",
+                f"{r2['Vanzari']:.0f} RON",
+                delta=f"{r2['Vanzari']-r1['Vanzari']:+.0f} RON",
+                help=f"Data 1: {r1['Vanzari']:.0f} RON → Data 2: {r2['Vanzari']:.0f} RON"
+            )
+
+            st.divider()
+
+            # --- Grafic bara grupat ---
+            df_comp_chart = pd.DataFrame({
+                "Indicator": ["Temp Max (°C)", "Temp Min (°C)", "Precipitații (mm)"],
+                data1.strftime('%d %b %Y'): [r1['Max'], r1['Min'], r1['Precipitatii']],
+                data2.strftime('%d %b %Y'): [r2['Max'], r2['Min'], r2['Precipitatii']],
+            })
+            df_melted = df_comp_chart.melt(id_vars="Indicator", var_name="Data", value_name="Valoare")
+
+            fig_bar = px.bar(
+                df_melted, x="Indicator", y="Valoare", color="Data",
+                barmode="group",
+                color_discrete_sequence=["#e74c3c", "#3498db"],
+                title=f"Comparație {oras_comp}",
+                labels={"Valoare": "Valoare", "Indicator": ""}
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+            # --- Tabel detaliat ---
+            st.subheader("📋 Detalii complete")
+            df_tabel = pd.DataFrame({
+                "Indicator": ["Temp Max (°C)", "Temp Min (°C)", "Precipitații (mm)", "Vânzări (RON)"],
+                data1.strftime('%d %b %Y'): [
+                    f"{r1['Max']:.1f}", f"{r1['Min']:.1f}",
+                    f"{r1['Precipitatii']:.1f}", f"{r1['Vanzari']:.0f}"
+                ],
+                data2.strftime('%d %b %Y'): [
+                    f"{r2['Max']:.1f}", f"{r2['Min']:.1f}",
+                    f"{r2['Precipitatii']:.1f}", f"{r2['Vanzari']:.0f}"
+                ],
+                "Diferență": [
+                    f"{r2['Max']-r1['Max']:+.1f}°C",
+                    f"{r2['Min']-r1['Min']:+.1f}°C",
+                    f"{r2['Precipitatii']-r1['Precipitatii']:+.1f} mm",
+                    f"{r2['Vanzari']-r1['Vanzari']:+.0f} RON"
+                ]
+            })
+            st.dataframe(df_tabel, use_container_width=True, hide_index=True)
 
 st.divider()
 
