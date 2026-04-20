@@ -4,77 +4,84 @@ import requests
 import plotly.express as px
 from datetime import datetime, timedelta
 
-st.set_page_config(layout="wide", page_title="Meteo & Sales ROI")
-
-# Lista orașe cu McDonald's
+# Configurare orașe McDo
 ORASE = {
-    "București": {"lat": 44.4323, "lon": 26.1063},
-    "Cluj-Napoca": {"lat": 46.7712, "lon": 23.6236},
-    "Timișoara": {"lat": 45.7489, "lon": 21.2087},
-    "Iași": {"lat": 47.1585, "lon": 27.6014},
-    "Brașov": {"lat": 45.6486, "lon": 25.6061},
-    "Constanța": {"lat": 44.1733, "lon": 28.6383},
-    "Craiova": {"lat": 44.3302, "lon": 23.7949},
-    "Sibiu": {"lat": 45.7983, "lon": 24.1256},
-    "Oradea": {"lat": 47.0465, "lon": 21.9189},
-    "Ploiești": {"lat": 44.9333, "lon": 26.0333}
+    "Bucuresti": {"lat": 44.43, "lon": 26.10},
+    "Cluj": {"lat": 46.77, "lon": 23.62},
+    "Timisoara": {"lat": 45.75, "lon": 21.21},
+    "Iasi": {"lat": 47.16, "lon": 27.60},
+    "Brasov": {"lat": 45.65, "lon": 25.61}
 }
 
-@st.cache_data(ttl=86400)
-def get_weather_data(city_name, start_date, end_date):
+def fetch_real_data(city_name, start_date, end_date):
+    lat, lon = ORASE[city_name]["lat"], ORASE[city_name]["lon"]
+    url = f"https://archive-api.open-meteo.com/v1/archive?latitude={lat}&longitude={lon}&start_date={start_date}&end_date={end_date}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=Europe%20%2FBerlin"
     try:
-        lat = ORASE[city_name]["lat"]
-        lon = ORASE[city_name]["lon"]
-        url = f"https://archive-api.open-meteo.com/v1/archive?latitude={lat}&longitude={lon}&start_date={start_date}&end_date={end_date}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=Europe%20%2FBerlin"
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            data = response.json()["daily"]
-            df = pd.DataFrame({
-                "Data": pd.to_datetime(data["time"]),
-                "Oraș": city_name,
-                "Temp Max": data["temperature_2m_max"],
-                "Temp Min": data["temperature_2m_min"],
-                "Precipitații (mm)": data["precipitation_sum"],
-                "Cod Meteo": data["weathercode"]
+        r = requests.get(url, timeout=15)
+        if r.status_code == 200:
+            d = r.json()["daily"]
+            return pd.DataFrame({
+                "Data": pd.to_datetime(d["time"]),
+                "Oras": city_name,
+                "Max": d["temperature_2m_max"],
+                "Min": d["temperature_2m_min"],
+                "Precipitatii": d["precipitation_sum"],
+                "Vanzari": 0.0
             })
-            return df
     except:
         return pd.DataFrame()
     return pd.DataFrame()
 
-st.title("🌦️ Corelație Vreme vs Vânzări")
+st.title("🤖 Sistem Automat Meteo-Vânzări")
 
-st.sidebar.header("Setări Analiză")
-selected_cities = st.sidebar.multiselect("Alege orașele:", list(ORASE.keys()), default=["București"])
-start_d = st.sidebar.date_input("De la data:", datetime.now() - timedelta(days=365))
-end_d = st.sidebar.date_input("Până la data:", datetime.now() - timedelta(days=2))
+# Încercăm să încărcăm baza de date existentă
+try:
+    df = pd.read_csv("baza_date.csv")
+    df["Data"] = pd.to_datetime(df["Data"])
+    st.success("Baza de date încărcată cu succes.")
+except:
+    st.warning("Baza de date nu există. Inițializăm extragerea istorică (3 ani)...")
+    df = pd.DataFrame()
 
-if st.sidebar.button("Extrage Datele"):
-    with st.spinner('Se descarcă datele meteo...'):
-        all_data = []
-        for city in selected_cities:
-            city_df = get_weather_data(city, start_d.strftime('%Y-%m-%d'), end_d.strftime('%Y-%m-%d'))
-            if not city_df.empty:
-                all_data.append(city_df)
+# BUTON DE ACTUALIZARE AUTOMATĂ
+if st.button("🔄 Actualizează Datele (Istoric + Azi)"):
+    new_data_list = []
+    # Dacă e prima dată, luăm de acum 3 ani, altfel doar de la ultima dată salvată
+    last_date = df["Data"].max() if not df.empty else (datetime.now() - timedelta(days=1095))
+    start_str = (last_date + timedelta(days=1)).strftime('%Y-%m-%d')
+    end_str = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
+
+    if start_str < end_str:
+        for oras in ORASE:
+            with st.spinner(f"Extrag date noi pentru {oras}..."):
+                batch = fetch_real_data(oras, start_str, end_str)
+                new_data_list.append(batch)
         
-        if all_data:
-            full_df = pd.concat(all_data)
-            full_df["Vânzări (Manual)"] = 0.0
-            st.session_state['master_data'] = full_df
-        else:
-            st.error("Nu am putut descărca datele. Verifică perioada selectată.")
+        if new_data_list:
+            new_df = pd.concat(new_data_list)
+            df = pd.concat([df, new_df]).drop_duplicates(subset=['Data', 'Oras'])
+            df.to_csv("baza_date.csv", index=False)
+            st.rerun()
+    else:
+        st.info("Datele sunt deja la zi.")
 
-if 'master_data' in st.session_state and not st.session_state['master_data'].empty:
-    df_to_show = st.session_state['master_data']
+# INTERFAȚA DE ANALIZĂ
+if not df.empty:
+    st.subheader("Comparație și Introducere Vânzări")
     
-    st.subheader("Grafic Comparativ Temperaturi")
-    fig = px.line(df_to_show, x="Data", y="Temp Max", color="Oraș", markers=True)
+    # Filtre
+    oras_sel = st.multiselect("Alege orașele:", df["Oras"].unique(), default=df["Oras"].unique()[:2])
+    
+    # Tabel editabil
+    df_filtered = df[df["Oras"].isin(oras_sel)].sort_values(by="Data", ascending=False)
+    edited_df = st.data_editor(df_filtered, key="editor")
+    
+    # Salvare manuală a vânzărilor introduse
+    if st.button("💾 Salvează Vânzările Introduse"):
+        df.update(edited_df)
+        df.to_csv("baza_date.csv", index=False)
+        st.success("Vânzările au fost salvate în baza de date!")
+
+    # Grafic
+    fig = px.line(edited_df, x="Data", y="Max", color="Oras", title="Evoluție Temperaturi Maxime")
     st.plotly_chart(fig, use_container_width=True)
-    
-    st.subheader("Introducere Date Vânzări")
-    edited_df = st.data_editor(df_to_show)
-    
-    csv = edited_df.to_csv(index=False).encode('utf-8')
-    st.download_button("📥 Descarcă Tabelul", data=csv, file_name="analiza_meteo.csv", mime="text/csv")
-else:
-    st.info("👈 Folosește meniul din stânga pentru a alege orașele și apasă pe 'Extrage Datele'.")
