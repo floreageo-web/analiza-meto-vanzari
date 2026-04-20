@@ -26,7 +26,6 @@ def fetch_weather(city_name, start_date, end_date):
     lat = ORASE_MCDO[city_name]["lat"]
     lon = ORASE_MCDO[city_name]["lon"]
 
-    # FIX: timezone encoding corect (Europa/Berlin fără spațiu)
     url = (
         f"https://archive-api.open-meteo.com/v1/archive"
         f"?latitude={lat}&longitude={lon}"
@@ -37,7 +36,7 @@ def fetch_weather(city_name, start_date, end_date):
 
     try:
         r = requests.get(url, timeout=20)
-        r.raise_for_status()  # Aruncă excepție pentru status 4xx/5xx
+        r.raise_for_status()
         d = r.json().get("daily", {})
 
         if not d or not d.get("time"):
@@ -70,13 +69,20 @@ if "--update_only" in sys.argv:
     print("🤖 Robotul a pornit...")
     all_new_data = []
 
-    # Determinăm punctul de start
-    if os.path.exists(FILE_DB):
-        df_existing = pd.read_csv(FILE_DB)
-        df_existing["Data"] = pd.to_datetime(df_existing["Data"])
-        last_date = df_existing["Data"].max()
-        start_dt = (last_date + timedelta(days=1)).strftime("%Y-%m-%d")
-        print(f"📂 Bază găsită. Continuăm de la {start_dt}.")
+    # ✅ FIX: Verificăm dacă fișierul există ȘI nu e gol ȘI e valid
+    if os.path.exists(FILE_DB) and os.path.getsize(FILE_DB) > 0:
+        try:
+            df_existing = pd.read_csv(FILE_DB)
+            if df_existing.empty or "Data" not in df_existing.columns:
+                raise ValueError("Fișier gol sau fără coloane corecte.")
+            df_existing["Data"] = pd.to_datetime(df_existing["Data"])
+            last_date = df_existing["Data"].max()
+            start_dt = (last_date + timedelta(days=1)).strftime("%Y-%m-%d")
+            print(f"📂 Bază găsită. Continuăm de la {start_dt}.")
+        except Exception as e:
+            print(f"⚠️ Baza existentă e coruptă ({e}). Resetăm de la 2023-01-01.")
+            df_existing = None
+            start_dt = "2023-01-01"
     else:
         start_dt = "2023-01-01"
         df_existing = None
@@ -138,7 +144,7 @@ import plotly.express as px
 st.set_page_config(layout="wide", page_title="📊 Meteo & Vânzări McDonald's")
 st.title("📊 Analiză Meteo & Vânzări")
 
-if not os.path.exists(FILE_DB):
+if not os.path.exists(FILE_DB) or os.path.getsize(FILE_DB) == 0:
     st.info("⏳ Baza de date nu există încă. Rulează robotul cu `--update_only` mai întâi.")
     st.stop()
 
@@ -232,11 +238,9 @@ edited = st.data_editor(
 
 if st.button("💾 Salvează Modificări", type="primary"):
     try:
-        # Backup înainte de salvare
         if os.path.exists(FILE_DB):
             os.replace(FILE_DB, FILE_DB + ".bak")
 
-        # FIX: update sigur cu index datetime
         df_full = pd.read_csv(FILE_DB + ".bak")
         df_full["Data"] = pd.to_datetime(df_full["Data"])
         df_full = df_full.set_index(["Data", "Oras"])
