@@ -27,10 +27,9 @@ ORASE_MCDO = {
     "Suceava":   {"lat": 47.65, "lon": 26.26},
     "Piatra Neamt": {"lat": 46.93, "lon": 26.37},
     "Targoviste": {"lat": 44.93, "lon": 25.46},
-    "Alexandria": {"lat": 43.97, "lon": 25.34},
     "Slatina":   {"lat": 44.43, "lon": 24.37},
     "Drobeta Turnu Severin": {"lat": 44.63, "lon": 22.66},
-    "Botoșani":  {"lat": 47.74, "lon": 26.67},
+    "Botosani":  {"lat": 47.74, "lon": 26.67},
     "Buzau":     {"lat": 45.15, "lon": 26.82},
     "Focsani":   {"lat": 45.70, "lon": 27.19},
     "Slobozia":  {"lat": 44.57, "lon": 27.37},
@@ -39,6 +38,7 @@ ORASE_MCDO = {
     "Alba Iulia": {"lat": 46.07, "lon": 23.58},
     "Dumbravita": {"lat": 45.80, "lon": 21.27},
     "Targu Jiu": {"lat": 45.04, "lon": 23.28},
+    "Alexandria": {"lat": 43.97, "lon": 25.34},
 }
 
 FILE_DB = "baza_date.csv"
@@ -46,9 +46,12 @@ FILE_DB = "baza_date.csv"
 
 def clasifica_ziua(row):
     """Returnează emoji + descriere pentru ziua meteo."""
-    temp_max = row.get("Max", 0) or 0
-    precipitatii = row.get("Precipitatii", 0) or 0
-    ore_soare = row.get("OreSoare", 0) or 0
+    try:
+        temp_max = float(row.get("Max") or 0)
+        precipitatii = float(row.get("Precipitatii") or 0)
+        ore_soare = float(row.get("OreSoare") or 0)
+    except (TypeError, ValueError):
+        return "❓ Necunoscută"
 
     if temp_max >= 35:
         return "🥵 Caniculară"
@@ -95,7 +98,6 @@ def fetch_weather(city_name, start_date, end_date):
             print(f"⚠️ Răspuns gol de la API pentru {city_name}.")
             return pd.DataFrame()
 
-        # sunshine_duration vine în secunde → convertim în ore
         ore_soare = [round(s / 3600, 1) if s is not None else 0.0
                      for s in d.get("sunshine_duration", [0] * len(d["time"]))]
         ore_ploaie = [round(p, 1) if p is not None else 0.0
@@ -112,9 +114,7 @@ def fetch_weather(city_name, start_date, end_date):
             "Vanzari":      0.0
         })
 
-        # Adăugăm descrierea zilei
         df["ZiTip"] = df.apply(clasifica_ziua, axis=1)
-
         return df
 
     except requests.exceptions.Timeout:
@@ -177,7 +177,6 @@ if "--update_only" in sys.argv:
         df_new["Data"] = pd.to_datetime(df_new["Data"])
 
         if df_existing is not None:
-            # Adăugăm coloanele noi dacă lipsesc din baza veche
             for col in ["OreSoare", "OrePloaie", "ZiTip"]:
                 if col not in df_existing.columns:
                     df_existing[col] = None
@@ -207,6 +206,18 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+# ---------------------------------------------------------------------------
+# HELPER — extrage float sigur dintr-un pandas Series value
+# ---------------------------------------------------------------------------
+def safe_float(val, default=0.0):
+    try:
+        if pd.isna(val):
+            return default
+        return float(val)
+    except Exception:
+        return default
+
+
 st.set_page_config(layout="wide", page_title="📊 Meteo & Vânzări McDonald's")
 st.title("📊 Analiză Meteo & Vânzări McDonald's România")
 
@@ -218,10 +229,14 @@ if not os.path.exists(FILE_DB) or os.path.getsize(FILE_DB) == 0:
 df = pd.read_csv(FILE_DB)
 df["Data"] = pd.to_datetime(df["Data"])
 
-# Adăugăm coloanele noi dacă lipsesc (pentru compatibilitate cu date vechi)
+# Adăugăm coloanele noi dacă lipsesc (compatibilitate cu date vechi)
 for col in ["OreSoare", "OrePloaie", "ZiTip"]:
     if col not in df.columns:
         df[col] = None
+
+# Asigurăm că OreSoare și OrePloaie sunt numerice
+df["OreSoare"] = pd.to_numeric(df["OreSoare"], errors="coerce").fillna(0.0)
+df["OrePloaie"] = pd.to_numeric(df["OrePloaie"], errors="coerce").fillna(0.0)
 
 # --- Sidebar ---
 st.sidebar.header("🔧 Filtre")
@@ -241,7 +256,6 @@ date_range = st.sidebar.date_input(
     max_value=max_date
 )
 
-# Aplicăm filtrele
 if len(date_range) == 2:
     start_filter, end_filter = date_range
     df_plot = df[
@@ -255,14 +269,13 @@ else:
 # --- Metrici rapide ---
 col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric("📅 Zile în bază", len(df_plot))
-col2.metric("🌡️ Max absolut", f"{df_plot['Max'].max():.1f}°C" if not df_plot.empty else "—")
-col3.metric("❄️ Min absolut", f"{df_plot['Min'].min():.1f}°C" if not df_plot.empty else "—")
-col4.metric("☀️ Medie ore soare/zi", f"{df_plot['OreSoare'].mean():.1f}h" if not df_plot.empty else "—")
-col5.metric("🌧️ Total precipitații", f"{df_plot['Precipitatii'].sum():.1f} mm" if not df_plot.empty else "—")
+col2.metric("🌡️ Max absolut",    f"{df_plot['Max'].max():.1f}°C"          if not df_plot.empty else "—")
+col3.metric("❄️ Min absolut",    f"{df_plot['Min'].min():.1f}°C"          if not df_plot.empty else "—")
+col4.metric("☀️ Medie ore soare",f"{df_plot['OreSoare'].mean():.1f}h"     if not df_plot.empty else "—")
+col5.metric("🌧️ Total precipit.", f"{df_plot['Precipitatii'].sum():.1f} mm" if not df_plot.empty else "—")
 
 st.divider()
 
-# --- Taburi principale ---
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🌡️ Temperaturi",
     "☀️ Soare & Ploaie",
@@ -272,6 +285,9 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🗺️ Harta McDonald's"
 ])
 
+# ---------------------------------------------------------------------------
+# TAB 1 — TEMPERATURI
+# ---------------------------------------------------------------------------
 with tab1:
     fig_temp = px.line(
         df_plot, x="Data", y=["Max", "Min"],
@@ -282,16 +298,18 @@ with tab1:
     )
     st.plotly_chart(fig_temp, use_container_width=True)
 
-    # Distribuție tipuri de zile
-    if "ZiTip" in df_plot.columns and df_plot["ZiTip"].notna().any():
+    if df_plot["ZiTip"].notna().any():
         st.subheader("📊 Distribuție tipuri de zile")
         zi_counts = df_plot["ZiTip"].value_counts().reset_index()
         zi_counts.columns = ["Tip Zi", "Număr Zile"]
-        fig_zi = px.bar(zi_counts, x="Tip Zi", y="Număr Zile",
-                        color="Tip Zi", title="Câte zile din fiecare tip",
+        fig_zi = px.bar(zi_counts, x="Tip Zi", y="Număr Zile", color="Tip Zi",
+                        title="Câte zile din fiecare tip",
                         color_discrete_sequence=px.colors.qualitative.Set3)
         st.plotly_chart(fig_zi, use_container_width=True)
 
+# ---------------------------------------------------------------------------
+# TAB 2 — SOARE & PLOAIE
+# ---------------------------------------------------------------------------
 with tab2:
     st.subheader("☀️ Ore de soare și ore de ploaie pe zi")
     col_s1, col_s2 = st.columns(2)
@@ -312,7 +330,6 @@ with tab2:
         )
         st.plotly_chart(fig_ploaie_ore, use_container_width=True)
 
-    # Medie lunară ore soare
     df_plot_copy = df_plot.copy()
     df_plot_copy["Luna"] = df_plot_copy["Data"].dt.to_period("M").astype(str)
     df_luna = df_plot_copy.groupby(["Luna", "Oras"])[["OreSoare", "OrePloaie"]].mean().reset_index()
@@ -322,6 +339,9 @@ with tab2:
     fig_luna.update_xaxes(tickangle=45)
     st.plotly_chart(fig_luna, use_container_width=True)
 
+# ---------------------------------------------------------------------------
+# TAB 3 — PRECIPITAȚII
+# ---------------------------------------------------------------------------
 with tab3:
     fig_prec = px.bar(
         df_plot, x="Data", y="Precipitatii", color="Oras",
@@ -330,6 +350,9 @@ with tab3:
     )
     st.plotly_chart(fig_prec, use_container_width=True)
 
+# ---------------------------------------------------------------------------
+# TAB 4 — VÂNZĂRI
+# ---------------------------------------------------------------------------
 with tab4:
     st.info("💡 Completează coloana 'Vânzări' manual în tabelul de mai jos, apoi apasă 'Salvează'.")
     fig_vanz = px.line(
@@ -368,33 +391,42 @@ with tab5:
             r1 = row1.iloc[0]
             r2 = row2.iloc[0]
 
+            # Extragem valorile în mod sigur
+            max_r1       = safe_float(r1["Max"])
+            max_r2       = safe_float(r2["Max"])
+            min_r1       = safe_float(r1["Min"])
+            min_r2       = safe_float(r2["Min"])
+            prec_r1      = safe_float(r1["Precipitatii"])
+            prec_r2      = safe_float(r2["Precipitatii"])
+            soare_r1     = safe_float(r1["OreSoare"])
+            soare_r2     = safe_float(r2["OreSoare"])
+            ploaie_r1    = safe_float(r1["OrePloaie"])
+            ploaie_r2    = safe_float(r2["OrePloaie"])
+            vanzari_r1   = safe_float(r1["Vanzari"])
+            vanzari_r2   = safe_float(r2["Vanzari"])
+            ziTip_r1     = r1["ZiTip"] if pd.notna(r1.get("ZiTip")) else "—"
+            ziTip_r2     = r2["ZiTip"] if pd.notna(r2.get("ZiTip")) else "—"
+
             st.divider()
             st.markdown(f"### 📊 {oras_comp}: {data1.strftime('%d %b %Y')} vs {data2.strftime('%d %b %Y')}")
 
-            # Tipul zilei
             c_tip1, c_tip2 = st.columns(2)
-            c_tip1.info(f"**{data1.strftime('%d %b %Y')}** → {r1.get('ZiTip', '—')}")
-            c_tip2.info(f"**{data2.strftime('%d %b %Y')}** → {r2.get('ZiTip', '—')}")
+            c_tip1.info(f"**{data1.strftime('%d %b %Y')}** → {ziTip_r1}")
+            c_tip2.info(f"**{data2.strftime('%d %b %Y')}** → {ziTip_r2}")
 
             c1, c2, c3, c4, c5 = st.columns(5)
-            c1.metric("🌡️ Temp Max", f"{r2['Max']:.1f}°C",
-                      delta=f"{r2['Max']-r1['Max']:+.1f}°C")
-            c2.metric("❄️ Temp Min", f"{r2['Min']:.1f}°C",
-                      delta=f"{r2['Min']-r1['Min']:+.1f}°C")
-            c3.metric("🌧️ Precipitații", f"{r2['Precipitatii']:.1f} mm",
-                      delta=f"{r2['Precipitatii']-r1['Precipitatii']:+.1f} mm")
-            c4.metric("☀️ Ore soare", f"{r2.get('OreSoare', 0):.1f}h",
-                      delta=f"{(r2.get('OreSoare') or 0)-(r1.get('OreSoare') or 0):+.1f}h")
-            c5.metric("💰 Vânzări", f"{r2['Vanzari']:.0f} RON",
-                      delta=f"{r2['Vanzari']-r1['Vanzari']:+.0f} RON")
+            c1.metric("🌡️ Temp Max",     f"{max_r2:.1f}°C",    delta=f"{max_r2-max_r1:+.1f}°C")
+            c2.metric("❄️ Temp Min",     f"{min_r2:.1f}°C",    delta=f"{min_r2-min_r1:+.1f}°C")
+            c3.metric("🌧️ Precipitații", f"{prec_r2:.1f} mm",  delta=f"{prec_r2-prec_r1:+.1f} mm")
+            c4.metric("☀️ Ore soare",    f"{soare_r2:.1f}h",   delta=f"{soare_r2-soare_r1:+.1f}h")
+            c5.metric("💰 Vânzări",      f"{vanzari_r2:.0f} RON", delta=f"{vanzari_r2-vanzari_r1:+.0f} RON")
 
             st.divider()
 
-            # Grafic bare grupat
             df_comp_chart = pd.DataFrame({
                 "Indicator": ["Temp Max (°C)", "Temp Min (°C)", "Precipitații (mm)", "Ore Soare"],
-                data1.strftime('%d %b %Y'): [r1['Max'], r1['Min'], r1['Precipitatii'], r1.get('OreSoare', 0)],
-                data2.strftime('%d %b %Y'): [r2['Max'], r2['Min'], r2['Precipitatii'], r2.get('OreSoare', 0)],
+                data1.strftime('%d %b %Y'): [max_r1, min_r1, prec_r1, soare_r1],
+                data2.strftime('%d %b %Y'): [max_r2, min_r2, prec_r2, soare_r2],
             })
             df_melted = df_comp_chart.melt(id_vars="Indicator", var_name="Data", value_name="Valoare")
             fig_bar = px.bar(df_melted, x="Indicator", y="Valoare", color="Data",
@@ -403,24 +435,24 @@ with tab5:
                              title=f"Comparație {oras_comp}")
             st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Tabel detaliat
             df_tabel = pd.DataFrame({
-                "Indicator": ["Temp Max (°C)", "Temp Min (°C)", "Precipitații (mm)", "Ore Soare", "Ore Ploaie", "Vânzări (RON)"],
+                "Indicator": ["Temp Max (°C)", "Temp Min (°C)", "Precipitații (mm)",
+                               "Ore Soare", "Ore Ploaie", "Vânzări (RON)"],
                 data1.strftime('%d %b %Y'): [
-                    f"{r1['Max']:.1f}", f"{r1['Min']:.1f}", f"{r1['Precipitatii']:.1f}",
-                    f"{r1.get('OreSoare', 0):.1f}", f"{r1.get('OrePloaie', 0):.1f}", f"{r1['Vanzari']:.0f}"
+                    f"{max_r1:.1f}", f"{min_r1:.1f}", f"{prec_r1:.1f}",
+                    f"{soare_r1:.1f}", f"{ploaie_r1:.1f}", f"{vanzari_r1:.0f}"
                 ],
                 data2.strftime('%d %b %Y'): [
-                    f"{r2['Max']:.1f}", f"{r2['Min']:.1f}", f"{r2['Precipitatii']:.1f}",
-                    f"{r2.get('OreSoare', 0):.1f}", f"{r2.get('OrePloaie', 0):.1f}", f"{r2['Vanzari']:.0f}"
+                    f"{max_r2:.1f}", f"{min_r2:.1f}", f"{prec_r2:.1f}",
+                    f"{soare_r2:.1f}", f"{ploaie_r2:.1f}", f"{vanzari_r2:.0f}"
                 ],
                 "Diferență": [
-                    f"{r2['Max']-r1['Max']:+.1f}°C",
-                    f"{r2['Min']-r1['Min']:+.1f}°C",
-                    f"{r2['Precipitatii']-r1['Precipitatii']:+.1f} mm",
-                    f"{(r2.get('OreSoare') or 0)-(r1.get('OreSoare') or 0):+.1f}h",
-                    f"{(r2.get('OrePloaie') or 0)-(r1.get('OrePloaie') or 0):+.1f}h",
-                    f"{r2['Vanzari']-r1['Vanzari']:+.0f} RON"
+                    f"{max_r2-max_r1:+.1f}°C",
+                    f"{min_r2-min_r1:+.1f}°C",
+                    f"{prec_r2-prec_r1:+.1f} mm",
+                    f"{soare_r2-soare_r1:+.1f}h",
+                    f"{ploaie_r2-ploaie_r1:+.1f}h",
+                    f"{vanzari_r2-vanzari_r1:+.0f} RON"
                 ]
             })
             st.dataframe(df_tabel, use_container_width=True, hide_index=True)
@@ -432,74 +464,59 @@ with tab6:
     st.subheader("🗺️ Toate restaurantele McDonald's din România")
     st.caption("108 restaurante în 33 de orașe — date actualizate 2025")
 
-    # Date locații complete McDonald's România
     locatii_mcdo = [
-        # București (cel mai mare număr de restaurante)
-        {"oras": "București", "nume": "McDonald's Magheru", "lat": 44.4445, "lon": 26.0983},
-        {"oras": "București", "nume": "McDonald's Unirii", "lat": 44.4286, "lon": 26.1043},
-        {"oras": "București", "nume": "McDonald's Mihai Bravu", "lat": 44.4196, "lon": 26.1371},
+        {"oras": "București", "nume": "McDonald's Magheru",        "lat": 44.4445, "lon": 26.0983},
+        {"oras": "București", "nume": "McDonald's Unirii",          "lat": 44.4286, "lon": 26.1043},
+        {"oras": "București", "nume": "McDonald's Mihai Bravu",     "lat": 44.4196, "lon": 26.1371},
         {"oras": "București", "nume": "McDonald's Brașov (sect 6)", "lat": 44.4187, "lon": 26.0350},
-        {"oras": "București", "nume": "McDonald's Basarabia", "lat": 44.4370, "lon": 26.1672},
-        # Cluj-Napoca
-        {"oras": "Cluj-Napoca", "nume": "McDonald's Primăverii", "lat": 46.7540, "lon": 23.5541},
+        {"oras": "București", "nume": "McDonald's Basarabia",       "lat": 44.4370, "lon": 26.1672},
+        {"oras": "Cluj-Napoca", "nume": "McDonald's Primăverii",    "lat": 46.7540, "lon": 23.5541},
         {"oras": "Cluj-Napoca", "nume": "McDonald's Mihai Viteazu", "lat": 46.7742, "lon": 23.5929},
-        # Timișoara
-        {"oras": "Timișoara", "nume": "McDonald's Rebreanu", "lat": 45.7390, "lon": 21.2409},
-        {"oras": "Timișoara", "nume": "McDonald's Circumvalațiunii", "lat": 45.7593, "lon": 21.2172},
-        # Iași
-        {"oras": "Iași", "nume": "McDonald's Gării", "lat": 47.1654, "lon": 27.5709},
-        {"oras": "Iași", "nume": "McDonald's Palas", "lat": 47.1572, "lon": 27.5893},
-        # Brașov
-        {"oras": "Brașov", "nume": "McDonald's Brașov", "lat": 45.6500, "lon": 25.5900},
-        # Constanța
-        {"oras": "Constanța", "nume": "McDonald's Mamaia", "lat": 44.2050, "lon": 28.6439},
+        {"oras": "Timișoara", "nume": "McDonald's Rebreanu",        "lat": 45.7390, "lon": 21.2409},
+        {"oras": "Timișoara", "nume": "McDonald's Circumvalațiunii","lat": 45.7593, "lon": 21.2172},
+        {"oras": "Iași",      "nume": "McDonald's Gării",           "lat": 47.1654, "lon": 27.5709},
+        {"oras": "Iași",      "nume": "McDonald's Palas",           "lat": 47.1572, "lon": 27.5893},
+        {"oras": "Brașov",    "nume": "McDonald's Brașov",          "lat": 45.6500, "lon": 25.5900},
+        {"oras": "Constanța", "nume": "McDonald's Mamaia",          "lat": 44.2050, "lon": 28.6439},
         {"oras": "Constanța", "nume": "McDonald's Ștefan cel Mare", "lat": 44.1782, "lon": 28.6469},
-        # Craiova
-        {"oras": "Craiova", "nume": "McDonald's Calea București", "lat": 44.3178, "lon": 23.8101},
-        {"oras": "Craiova", "nume": "McDonald's Electroputere", "lat": 44.3130, "lon": 23.8315},
-        # Sibiu
-        {"oras": "Sibiu", "nume": "McDonald's Sibiu", "lat": 45.7941, "lon": 24.1498},
-        # Oradea
-        {"oras": "Oradea", "nume": "McDonald's Republicii", "lat": 47.0623, "lon": 21.9380},
-        {"oras": "Oradea", "nume": "McDonald's Ciheiului", "lat": 47.0326, "lon": 21.9501},
-        # Ploiești
-        {"oras": "Ploiești", "nume": "McDonald's Republicii", "lat": 44.9525, "lon": 25.9995},
-        {"oras": "Ploiești", "nume": "McDonald's Mercur", "lat": 44.9405, "lon": 26.0250},
-        # Alte orașe
-        {"oras": "Pitești", "nume": "McDonald's Pitești", "lat": 44.8565, "lon": 24.8694},
-        {"oras": "Bacău", "nume": "McDonald's Bacău", "lat": 46.5671, "lon": 26.9146},
-        {"oras": "Galați", "nume": "McDonald's Galați", "lat": 45.4353, "lon": 28.0476},
-        {"oras": "Brăila", "nume": "McDonald's Brăila", "lat": 45.2692, "lon": 27.9574},
-        {"oras": "Târgu Mureș", "nume": "McDonald's Târgu Mureș", "lat": 46.5386, "lon": 24.5579},
-        {"oras": "Arad", "nume": "McDonald's Arad", "lat": 46.1866, "lon": 21.3123},
-        {"oras": "Deva", "nume": "McDonald's Deva", "lat": 45.8833, "lon": 22.9117},
-        {"oras": "Râmnicu Vâlcea", "nume": "McDonald's Rm. Vâlcea", "lat": 45.0997, "lon": 24.3693},
-        {"oras": "Suceava", "nume": "McDonald's Suceava", "lat": 47.6520, "lon": 26.2563},
-        {"oras": "Piatra Neamț", "nume": "McDonald's Piatra Neamț", "lat": 46.9251, "lon": 26.3718},
-        {"oras": "Târgoviște", "nume": "McDonald's Târgoviște", "lat": 44.9268, "lon": 25.4566},
-        {"oras": "Buzău", "nume": "McDonald's Buzău", "lat": 45.1500, "lon": 26.8200},
-        {"oras": "Botoșani", "nume": "McDonald's Botoșani", "lat": 47.7402, "lon": 26.6674},
-        {"oras": "Focșani", "nume": "McDonald's Focșani", "lat": 45.6990, "lon": 27.1872},
-        {"oras": "Slatina", "nume": "McDonald's Slatina", "lat": 44.4318, "lon": 24.3705},
-        {"oras": "Drobeta Turnu Severin", "nume": "McDonald's Dr. Tr. Severin", "lat": 44.6282, "lon": 22.6568},
-        {"oras": "Alba Iulia", "nume": "McDonald's Alba Iulia", "lat": 46.0669, "lon": 23.5806},
-        {"oras": "Dumbrăvița", "nume": "McDonald's Dumbrăvița", "lat": 45.7980, "lon": 21.2700},
-        {"oras": "Bistrița", "nume": "McDonald's Bistrița", "lat": 47.1326, "lon": 24.4965},
+        {"oras": "Craiova",   "nume": "McDonald's Calea București", "lat": 44.3178, "lon": 23.8101},
+        {"oras": "Craiova",   "nume": "McDonald's Electroputere",   "lat": 44.3130, "lon": 23.8315},
+        {"oras": "Sibiu",     "nume": "McDonald's Sibiu",           "lat": 45.7941, "lon": 24.1498},
+        {"oras": "Oradea",    "nume": "McDonald's Republicii",      "lat": 47.0623, "lon": 21.9380},
+        {"oras": "Oradea",    "nume": "McDonald's Ciheiului",       "lat": 47.0326, "lon": 21.9501},
+        {"oras": "Ploiești",  "nume": "McDonald's Republicii",      "lat": 44.9525, "lon": 25.9995},
+        {"oras": "Ploiești",  "nume": "McDonald's Mercur",          "lat": 44.9405, "lon": 26.0250},
+        {"oras": "Pitești",   "nume": "McDonald's Pitești",         "lat": 44.8565, "lon": 24.8694},
+        {"oras": "Bacău",     "nume": "McDonald's Bacău",           "lat": 46.5671, "lon": 26.9146},
+        {"oras": "Galați",    "nume": "McDonald's Galați",          "lat": 45.4353, "lon": 28.0476},
+        {"oras": "Brăila",    "nume": "McDonald's Brăila",          "lat": 45.2692, "lon": 27.9574},
+        {"oras": "Târgu Mureș","nume": "McDonald's Târgu Mureș",    "lat": 46.5386, "lon": 24.5579},
+        {"oras": "Arad",      "nume": "McDonald's Arad",            "lat": 46.1866, "lon": 21.3123},
+        {"oras": "Deva",      "nume": "McDonald's Deva",            "lat": 45.8833, "lon": 22.9117},
+        {"oras": "Râmnicu Vâlcea","nume": "McDonald's Rm. Vâlcea", "lat": 45.0997, "lon": 24.3693},
+        {"oras": "Suceava",   "nume": "McDonald's Suceava",         "lat": 47.6520, "lon": 26.2563},
+        {"oras": "Piatra Neamț","nume": "McDonald's Piatra Neamț", "lat": 46.9251, "lon": 26.3718},
+        {"oras": "Târgoviște","nume": "McDonald's Târgoviște",      "lat": 44.9268, "lon": 25.4566},
+        {"oras": "Buzău",     "nume": "McDonald's Buzău",           "lat": 45.1500, "lon": 26.8200},
+        {"oras": "Botoșani",  "nume": "McDonald's Botoșani",        "lat": 47.7402, "lon": 26.6674},
+        {"oras": "Focșani",   "nume": "McDonald's Focșani",         "lat": 45.6990, "lon": 27.1872},
+        {"oras": "Slatina",   "nume": "McDonald's Slatina",         "lat": 44.4318, "lon": 24.3705},
+        {"oras": "Dr. Tr. Severin","nume": "McDonald's Dr. Tr. Severin","lat": 44.6282,"lon": 22.6568},
+        {"oras": "Alba Iulia","nume": "McDonald's Alba Iulia",      "lat": 46.0669, "lon": 23.5806},
+        {"oras": "Dumbrăvița","nume": "McDonald's Dumbrăvița",      "lat": 45.7980, "lon": 21.2700},
+        {"oras": "Bistrița",  "nume": "McDonald's Bistrița",        "lat": 47.1326, "lon": 24.4965},
     ]
 
     df_locatii = pd.DataFrame(locatii_mcdo)
 
-    # Statistici
     c1, c2, c3 = st.columns(3)
     c1.metric("🍔 Total restaurante", len(df_locatii))
-    c2.metric("🏙️ Orașe acoperite", df_locatii["oras"].nunique())
+    c2.metric("🏙️ Orașe acoperite",  df_locatii["oras"].nunique())
     c3.metric("📍 Cel mai mare oraș", "București")
 
-    # Harta cu plotly
     fig_map = px.scatter_map(
         df_locatii,
-        lat="lat",
-        lon="lon",
+        lat="lat", lon="lon",
         hover_name="nume",
         hover_data={"oras": True, "lat": False, "lon": False},
         color="oras",
@@ -512,7 +529,6 @@ with tab6:
     fig_map.update_traces(marker=dict(size=12))
     st.plotly_chart(fig_map, use_container_width=True)
 
-    # Tabel cu număr restaurante per oraș
     st.subheader("📊 Restaurante per oraș")
     df_per_oras = df_locatii.groupby("oras").size().reset_index(name="Nr. Restaurante")
     df_per_oras = df_per_oras.sort_values("Nr. Restaurante", ascending=False).reset_index(drop=True)
@@ -530,13 +546,13 @@ edited = st.data_editor(
     use_container_width=True,
     num_rows="fixed",
     column_config={
-        "Vanzari": st.column_config.NumberColumn("Vânzări (RON)", min_value=0, format="%.2f"),
-        "Max": st.column_config.NumberColumn("Temp Max (°C)", format="%.1f"),
-        "Min": st.column_config.NumberColumn("Temp Min (°C)", format="%.1f"),
+        "Vanzari":      st.column_config.NumberColumn("Vânzări (RON)", min_value=0, format="%.2f"),
+        "Max":          st.column_config.NumberColumn("Temp Max (°C)", format="%.1f"),
+        "Min":          st.column_config.NumberColumn("Temp Min (°C)", format="%.1f"),
         "Precipitatii": st.column_config.NumberColumn("Precipitații (mm)", format="%.1f"),
-        "OreSoare": st.column_config.NumberColumn("☀️ Ore Soare", format="%.1f"),
-        "OrePloaie": st.column_config.NumberColumn("🌧️ Ore Ploaie", format="%.1f"),
-        "ZiTip": st.column_config.TextColumn("Tip Zi"),
+        "OreSoare":     st.column_config.NumberColumn("☀️ Ore Soare", format="%.1f"),
+        "OrePloaie":    st.column_config.NumberColumn("🌧️ Ore Ploaie", format="%.1f"),
+        "ZiTip":        st.column_config.TextColumn("Tip Zi"),
     }
 )
 
