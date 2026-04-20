@@ -2,15 +2,19 @@ name: Actualizare Zilnica Meteo
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Rulează în fiecare noapte la ora 03:00 (ora RO)
-  workflow_dispatch: # Permite și pornirea manuală din tab-ul Actions
+    - cron: '0 1 * * *'  # 01:00 UTC = 03:00 ora României (iarna UTC+2)
+  workflow_dispatch:       # Permite pornirea manuală din tab-ul Actions
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout cod
         uses: actions/checkout@v3
+        with:
+          # ✅ FIX: token explicit ca să poată face push înapoi
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setare Python
         uses: actions/setup-python@v4
@@ -28,7 +32,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Verificăm dacă fișierul a fost creat/modificat înainte de commit
           git add baza_date.csv
-          git commit -m "Actualizare automata date meteo [skip ci]" || exit 0
-          git push
+          # Dacă nu sunt modificări, exit 0 = succes (nu eșuează workflow-ul)
+          git diff --staged --quiet && echo "✅ Nicio modificare de salvat." || (
+            git commit -m "Actualizare automata date meteo [skip ci]" &&
+            git push
+          )
