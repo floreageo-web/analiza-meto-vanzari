@@ -1,0 +1,33 @@
+name: Actualizare Zilnica Meteo
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Rulează în fiecare noapte la ora 03:00
+  workflow_dispatch: # Permite și pornirea manuală
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cod
+        uses: actions/checkout@v3
+
+      - name: Setare Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalare dependinte
+        run: |
+          pip install pandas requests
+
+      - name: Executie script extragere
+        run: python app.py --update_only # Adaugam un parametru sa nu pornească Streamlit aici
+
+      - name: Salvare date noi in GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add baza_date.csv
+          git commit -m "Actualizare automata date meteo" || exit 0
+          git push
