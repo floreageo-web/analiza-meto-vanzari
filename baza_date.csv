@@ -3635,6 +3635,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-04-19,Arad,20.5,5.1,0.0,12.4,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-04-25,Arad,21.8,5.8,0.0,13.0,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-04,Arad,23.5,5.1,0.0,13.3,0.0,0,☀️ Cer senin,0.0,arhiva
+2026-05-05,Arad,26.8,9.0,0.0,13.4,,2,,0.0,
 2023-01-01,Bacau,16.6,3.7,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Bacau,12.4,1.5,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Bacau,13.1,1.9,0.0,8.2,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -13416,6 +13417,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-04-23,Deva,16.0,1.2,0.0,13.0,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-03,Deva,17.7,5.8,0.0,13.4,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-04,Deva,23.7,4.9,0.0,13.5,0.0,1,🌤️ Predominant senin,0.0,arhiva
+2026-05-05,Deva,26.9,8.0,0.0,13.6,,2,,0.0,
 2026-04-20,Drobeta Turnu Severin,17.8,5.2,0.0,10.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-04-21,Drobeta Turnu Severin,16.5,8.4,0.0,8.0,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-04-22,Drobeta Turnu Severin,15.9,6.7,0.3,12.2,3.0,51,🌦️ Burniță ușoară,0.0,arhiva
@@ -20733,6 +20735,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-05-02,Piatra Neamt,10.6,4.2,2.1,12.4,12.0,53,🌦️ Burniță moderată,0.0,arhiva
 2026-05-03,Piatra Neamt,14.7,0.3,0.0,11.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-04,Piatra Neamt,23.0,4.6,0.0,14.0,0.0,2,⛅ Parțial înnorat,0.0,arhiva
+2026-05-05,Piatra Neamt,24.5,6.8,0.0,14.0,,0,,0.0,
 2023-01-01,Pitesti,15.9,0.8,0.0,8.7,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-02,Pitesti,16.8,3.8,0.0,8.7,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-03,Pitesti,17.0,3.3,0.0,8.7,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -24380,6 +24383,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-05-02,Ramnicu Valcea,14.2,2.9,2.6,13.1,5.0,61,🌧️ Ploaie ușoară,0.0,arhiva
 2026-05-03,Ramnicu Valcea,14.4,2.8,0.0,13.4,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-04,Ramnicu Valcea,23.2,3.5,0.0,13.5,0.0,1,🌤️ Predominant senin,0.0,arhiva
+2026-05-05,Ramnicu Valcea,25.1,9.2,0.0,13.7,,1,,0.0,
 2026-04-20,Sibiu,17.0,5.8,0.3,9.2,2.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Sibiu,13.6,5.6,1.8,10.4,8.0,53,🌦️ Burniță moderată,0.0,arhiva
 2026-04-22,Sibiu,12.5,4.3,2.9,6.8,11.0,53,🌦️ Burniță moderată,0.0,arhiva
@@ -26840,6 +26844,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-05-02,Suceava,12.5,4.8,1.2,11.1,8.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-05-03,Suceava,16.8,0.9,0.0,14.0,0.0,2,⛅ Parțial înnorat,0.0,arhiva
 2026-05-04,Suceava,24.4,7.8,0.0,13.7,0.0,1,🌤️ Predominant senin,0.0,arhiva
+2026-05-05,Suceava,26.1,8.4,0.0,14.0,,0,,0.0,
 2026-04-20,Targoviste,20.1,6.2,0.2,9.7,1.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Targoviste,9.6,3.6,1.2,2.7,5.0,53,🌦️ Burniță moderată,0.0,arhiva
 2026-04-22,Targoviste,11.6,3.2,4.3,7.7,8.0,61,🌧️ Ploaie ușoară,0.0,arhiva
@@ -26851,6 +26856,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-05-02,Targoviste,12.6,3.8,4.3,9.4,7.0,61,🌧️ Ploaie ușoară,0.0,arhiva
 2026-05-03,Targoviste,14.2,2.5,0.0,13.7,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-05-04,Targoviste,20.5,3.0,0.2,13.7,1.0,51,🌦️ Burniță ușoară,0.0,arhiva
+2026-05-05,Targoviste,22.7,7.3,0.7,13.8,,53,,0.0,
 2023-01-01,Targu Jiu,14.6,1.0,0.0,8.5,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Targu Jiu,10.9,0.6,0.0,8.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Targu Jiu,13.3,1.0,0.0,8.7,0.0,3,☁️ Înnorat,0.0,arhiva
