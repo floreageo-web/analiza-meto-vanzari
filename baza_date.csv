@@ -6302,6 +6302,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Botosani,25.4,15.3,0.0,15.2,,2,,0.0,
 2026-06-10,Botosani,27.6,14.9,0.0,15.2,,2,,0.0,
 2026-06-11,Botosani,28.8,15.6,3.0,12.6,,53,,0.0,
+2026-06-12,Botosani,16.7,11.6,3.6,3.3,,61,,0.0,
+2026-06-13,Botosani,21.6,9.6,0.0,15.4,,2,,0.0,
 2023-01-01,Braila,12.6,3.2,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Braila,13.1,3.8,0.0,8.2,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-03,Braila,13.1,4.1,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -8810,6 +8812,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Brasov,26.0,14.4,0.0,15.0,,1,,0.0,
 2026-06-11,Brasov,24.1,11.5,2.6,14.8,,55,,0.0,
 2026-06-12,Brasov,16.5,12.3,13.9,0.8,,63,,0.0,
+2026-06-13,Brasov,19.6,10.2,1.2,15.0,,51,,0.0,
 2023-01-01,Bucuresti,13.6,3.5,0.0,8.5,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Bucuresti,15.3,5.2,0.0,8.6,0.0,0,☀️ Cer senin,0.0,arhiva
 2023-01-03,Bucuresti,13.4,4.4,0.0,8.6,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -10069,6 +10072,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Bucuresti,28.8,17.0,0.5,13.5,,51,,0.0,
 2026-06-11,Bucuresti,31.6,17.5,0.1,14.2,,51,,0.0,
 2026-06-12,Bucuresti,23.0,14.7,6.0,3.9,,55,,0.0,
+2026-06-13,Bucuresti,23.0,14.1,0.2,13.9,,51,,0.0,
 2026-04-20,Buzau,21.2,7.0,0.4,11.0,3.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Buzau,10.9,5.6,4.8,1.1,7.0,55,🌧️ Burniță densă,0.0,arhiva
 2026-04-22,Buzau,11.6,4.6,0.7,7.6,5.0,51,🌦️ Burniță ușoară,0.0,arhiva
@@ -10121,6 +10125,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Buzau,25.5,15.4,0.7,14.9,,51,,0.0,
 2026-06-10,Buzau,26.8,15.4,0.8,14.9,,53,,0.0,
 2026-06-11,Buzau,28.6,15.4,0.8,14.5,,53,,0.0,
+2026-06-12,Buzau,19.5,13.8,15.8,2.8,,63,,0.0,
+2026-06-13,Buzau,23.8,13.1,0.9,14.2,,51,,0.0,
 2023-01-01,Cluj,10.6,3.1,0.0,6.9,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Cluj,8.4,2.2,0.0,7.3,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Cluj,5.9,0.8,0.0,2.8,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -11380,6 +11386,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Cluj,29.0,14.5,0.0,15.0,,2,,0.0,
 2026-06-11,Cluj,24.8,14.7,19.5,9.9,,63,,0.0,
 2026-06-12,Cluj,18.9,12.9,10.5,12.0,,61,,0.0,
+2026-06-13,Cluj,21.7,8.2,0.7,15.0,,51,,0.0,
 2023-01-01,Constanta,15.7,6.0,0.0,8.2,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Constanta,14.9,5.4,0.0,8.3,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-03,Constanta,13.7,4.2,0.0,8.3,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -12639,6 +12646,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Constanta,24.5,15.8,0.0,14.4,,3,,0.0,
 2026-06-11,Constanta,24.9,17.0,0.1,14.4,,51,,0.0,
 2026-06-12,Constanta,25.4,16.5,8.8,13.2,,63,,0.0,
+2026-06-13,Constanta,21.6,14.8,0.0,11.5,,3,,0.0,
 2023-01-01,Craiova,12.7,1.8,0.0,8.7,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Craiova,13.1,1.4,0.0,8.4,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Craiova,14.3,0.5,0.0,8.5,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -13897,6 +13905,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Craiova,31.0,17.9,0.0,15.0,,3,,0.0,
 2026-06-10,Craiova,32.4,19.0,0.1,15.0,,51,,0.0,
 2026-06-11,Craiova,30.8,19.1,2.6,14.7,,61,,0.0,
+2026-06-12,Craiova,23.9,15.1,1.4,8.5,,55,,0.0,
+2026-06-13,Craiova,24.4,14.0,0.2,15.0,,51,,0.0,
 2026-04-21,Deva,15.7,6.5,0.6,10.1,3.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-22,Deva,12.7,2.9,3.5,8.0,9.0,73,🌨️ Ninsoare moderată,0.0,arhiva
 2026-04-23,Deva,16.0,1.2,0.0,13.0,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -13941,6 +13951,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Deva,29.6,14.2,0.0,15.0,,3,,0.0,
 2026-06-11,Deva,24.8,15.1,16.5,12.1,,63,,0.0,
 2026-06-12,Deva,20.5,13.6,6.6,11.9,,61,,0.0,
+2026-06-13,Deva,21.8,10.7,0.9,15.0,,51,,0.0,
 2026-04-20,Drobeta Turnu Severin,17.8,5.2,0.0,10.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-04-21,Drobeta Turnu Severin,16.5,8.4,0.0,8.0,0.0,3,☁️ Înnorat,0.0,arhiva
 2026-04-22,Drobeta Turnu Severin,15.9,6.7,0.3,12.2,3.0,51,🌦️ Burniță ușoară,0.0,arhiva
@@ -13994,6 +14005,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Drobeta Turnu Severin,27.9,14.6,0.0,15.0,,3,,0.0,
 2026-06-10,Drobeta Turnu Severin,28.9,17.2,0.0,15.0,,1,,0.0,
 2026-06-11,Drobeta Turnu Severin,27.5,16.8,4.7,14.5,,61,,0.0,
+2026-06-12,Drobeta Turnu Severin,22.1,15.6,7.2,13.0,,63,,0.0,
+2026-06-13,Drobeta Turnu Severin,23.0,12.0,1.2,15.0,,51,,0.0,
 2023-01-01,Dumbravita,14.4,4.1,0.0,7.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Dumbravita,14.0,3.5,0.0,8.4,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Dumbravita,10.1,1.9,0.3,3.6,3.0,51,🌦️ Burniță ușoară,0.0,arhiva
@@ -19008,6 +19021,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Iasi,27.1,14.6,0.0,15.3,,1,,0.0,
 2026-06-11,Iasi,28.4,15.4,0.5,13.9,,51,,0.0,
 2026-06-12,Iasi,18.8,13.6,3.9,1.4,,53,,0.0,
+2026-06-13,Iasi,22.0,10.4,0.0,15.1,,3,,0.0,
 2023-01-01,Oradea,14.2,8.4,0.0,7.9,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Oradea,13.2,6.8,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Oradea,8.8,5.5,0.4,0.1,2.0,51,🌦️ Burniță ușoară,0.0,arhiva
@@ -21519,6 +21533,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Piatra Neamt,23.3,12.8,0.6,15.0,,51,,0.0,
 2026-06-10,Piatra Neamt,24.5,13.4,0.0,15.0,,3,,0.0,
 2026-06-11,Piatra Neamt,24.8,12.9,0.5,14.8,,51,,0.0,
+2026-06-12,Piatra Neamt,16.2,11.1,12.1,2.5,,63,,0.0,
+2026-06-13,Piatra Neamt,19.6,8.0,1.1,15.2,,51,,0.0,
 2023-01-01,Pitesti,15.9,0.8,0.0,8.7,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-02,Pitesti,16.8,3.8,0.0,8.7,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-03,Pitesti,17.0,3.3,0.0,8.7,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -25276,6 +25292,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Ramnicu Valcea,28.4,15.4,0.2,15.0,,51,,0.0,
 2026-06-11,Ramnicu Valcea,28.7,16.3,3.2,14.7,,61,,0.0,
 2026-06-12,Ramnicu Valcea,21.0,14.6,9.7,6.4,,61,,0.0,
+2026-06-13,Ramnicu Valcea,21.2,11.2,1.3,15.0,,51,,0.0,
 2026-04-20,Sibiu,17.0,5.8,0.3,9.2,2.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Sibiu,13.6,5.6,1.8,10.4,8.0,53,🌦️ Burniță moderată,0.0,arhiva
 2026-04-22,Sibiu,12.5,4.3,2.9,6.8,11.0,53,🌦️ Burniță moderată,0.0,arhiva
@@ -25329,6 +25346,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Sibiu,27.4,14.4,0.0,15.0,,3,,0.0,
 2026-06-10,Sibiu,28.4,14.2,0.1,15.0,,51,,0.0,
 2026-06-11,Sibiu,25.5,15.2,4.7,13.3,,55,,0.0,
+2026-06-12,Sibiu,18.5,13.4,11.5,7.4,,61,,0.0,
+2026-06-13,Sibiu,22.0,10.6,0.0,15.0,,3,,0.0,
 2026-04-20,Slatina,20.5,8.2,0.1,10.5,1.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Slatina,15.3,6.9,3.7,10.9,5.0,63,🌧️ Ploaie moderată,0.0,arhiva
 2026-04-22,Slatina,13.6,4.9,1.9,9.9,6.0,53,🌦️ Burniță moderată,0.0,arhiva
@@ -25381,6 +25400,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Slatina,30.9,18.0,0.4,15.0,,51,,0.0,
 2026-06-10,Slatina,31.1,18.5,0.3,15.0,,51,,0.0,
 2026-06-11,Slatina,31.8,18.7,7.5,14.4,,63,,0.0,
+2026-06-12,Slatina,23.5,15.8,5.9,7.8,,61,,0.0,
+2026-06-13,Slatina,24.6,14.0,0.3,14.9,,51,,0.0,
 2023-01-01,Slobozia,13.2,4.9,0.0,8.3,0.0,2,⛅ Parțial înnorat,0.0,arhiva
 2023-01-02,Slobozia,15.6,5.6,0.0,8.4,0.0,1,🌤️ Predominant senin,0.0,arhiva
 2023-01-03,Slobozia,13.6,4.5,0.0,8.3,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -27887,6 +27908,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Suceava,25.9,13.6,0.0,15.1,,3,,0.0,
 2026-06-11,Suceava,26.5,14.2,5.8,13.5,,63,,0.0,
 2026-06-12,Suceava,14.9,10.6,10.4,4.4,,63,,0.0,
+2026-06-13,Suceava,21.0,7.8,0.0,15.3,,2,,0.0,
 2026-04-20,Targoviste,20.1,6.2,0.2,9.7,1.0,51,🌦️ Burniță ușoară,0.0,arhiva
 2026-04-21,Targoviste,9.6,3.6,1.2,2.7,5.0,53,🌦️ Burniță moderată,0.0,arhiva
 2026-04-22,Targoviste,11.6,3.2,4.3,7.7,8.0,61,🌧️ Ploaie ușoară,0.0,arhiva
@@ -27936,6 +27958,8 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-09,Targoviste,25.1,15.1,1.4,15.0,,53,,0.0,
 2026-06-10,Targoviste,26.5,15.9,1.2,15.0,,53,,0.0,
 2026-06-11,Targoviste,27.6,17.3,1.6,14.0,,55,,0.0,
+2026-06-12,Targoviste,19.4,13.9,15.9,1.0,,63,,0.0,
+2026-06-13,Targoviste,22.4,12.6,0.3,14.2,,51,,0.0,
 2023-01-01,Targu Jiu,14.6,1.0,0.0,8.5,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Targu Jiu,10.9,0.6,0.0,8.6,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-03,Targu Jiu,13.3,1.0,0.0,8.7,0.0,3,☁️ Înnorat,0.0,arhiva
@@ -31695,6 +31719,7 @@ Data,Oras,Max,Min,Precipitatii,OreSoare,OrePloaie,WMO,ZiTip,Vanzari,Tip
 2026-06-10,Timisoara,32.0,16.8,0.0,15.0,,3,,0.0,
 2026-06-11,Timisoara,22.9,15.1,18.0,9.4,,63,,0.0,
 2026-06-12,Timisoara,21.8,12.9,1.3,15.0,,53,,0.0,
+2026-06-13,Timisoara,22.8,11.8,0.3,15.0,,51,,0.0,
 2023-01-01,Tulcea,14.0,3.7,0.0,8.0,0.0,3,☁️ Înnorat,0.0,arhiva
 2023-01-02,Tulcea,15.5,4.9,0.0,8.1,0.0,2,⛅ Parțial înnorat,0.0,arhiva
 2023-01-03,Tulcea,12.4,5.2,0.0,8.1,0.0,3,☁️ Înnorat,0.0,arhiva
